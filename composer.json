@@ -1,0 +1,15 @@
+{
+    "name": "tu-nombre/reservas-api",
+    "description": "API de reservas de alojamiento",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dev Team",
+            "email": "mellowparasite@gmail.com"
+        }
+    ],
+    "require": {
+        "twig/twig": "^3.30"
+    }
+}
