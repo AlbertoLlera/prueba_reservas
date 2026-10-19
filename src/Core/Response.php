@@ -17,6 +17,17 @@
         }
 
 
+            /**
+     * Crea una respuesta JSON.
+     */
+        public static function json(mixed $data, int $statusCode = 200): self
+        {
+            return new self(
+                json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '',
+                $statusCode,
+                ['Content-Type' => 'application/json; charset=utf-8']
+            );
+        }
 
         public function send(): void{
             http_response_code($this->statusCode);
