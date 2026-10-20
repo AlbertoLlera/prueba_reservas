@@ -4,33 +4,66 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use App\Controllers\Api\ReservaController;
 use App\Core\Config;
+use App\Core\Database;
 use App\Core\ErrorHandler;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Router;
+use App\Repositories\ReservaEventoRepository;
+use App\Repositories\ReservaRepository;
+use App\Services\ReservaService;
+use App\Validators\ReservaValidator;
 
-// 1. Cargar configuración
+// 1. Config
 Config::load(__DIR__ . '/../.env');
 
-// 2. Registrar manejador de errores ANTES de cualquier otra cosa
+// 2. Error handler (lo primero, para capturar todo)
 $errorHandler = new ErrorHandler(Config::getBool('APP_DEBUG', false));
 $errorHandler->register();
 
-// 3. Crear request
-$request = Request::fromGlobals();
+// 3. Conexión a BD
+$db = new Database(
+    Config::get('DB_HOST'),
+    (int) Config::get('DB_PORT'),
+    Config::get('DB_NAME'),
+    Config::get('DB_USER'),
+    Config::get('DB_PASS', '')
+);
+$pdo = $db->getConnection();
 
-// 4. Configurar router
+// 4. Repositorios
+$reservaRepo = new ReservaRepository($pdo);
+$eventoRepo  = new ReservaEventoRepository($pdo);
+
+// 5. Validator
+$validator = new ReservaValidator();
+
+// 6. Service
+$reservaService = new ReservaService($reservaRepo, $eventoRepo, $validator);
+
+// 7. Controladores
+$reservaController = new ReservaController($reservaService);
+
+// 8. Router
 $router = new Router();
 
-// 5. Definir rutas
+// 9. Rutas
+// Endpoint de diagnóstico
 $router->add('GET', '/api/ping', function (Request $req, array $params): void {
     Response::json([
-        'ok' => true,
+        'ok'        => true,
         'timestamp' => date('c'),
-        'path' => $req->getPath(),
     ], 200)->send();
 });
 
-// 6. Despachar
+// Reservas (REST)
+$router->add('GET',   '/api/reservas',                 [$reservaController, 'index']);
+$router->add('GET',   '/api/reservas/{id}',            [$reservaController, 'show']);
+$router->add('POST',  '/api/reservas',                 [$reservaController, 'store']);
+$router->add('PATCH', '/api/reservas/{id}/estado',     [$reservaController, 'cambiarEstado']);
+
+// 10. Dispatch
+$request = Request::fromGlobals();
 $router->dispatch($request);

@@ -66,19 +66,24 @@
             );
        }
 
-       private function invoke(callable|array $handler, Request $request, array $params): void
-        {
-            if (is_array($handler) && is_string($handler[0] ?? null)) {
-                [$class, $method] = $handler;
-                $controller = new $class();
-                $controller->$method($request, $params);
-                return;
-            }
-
-            if (is_callable($handler)) {
-                $handler($request, $params);
-            }
+       private function invoke(callable|array $handler, Request $request, array $params): void {
+        if (is_array($handler) && isset($handler[0]) && is_object($handler[0])) {
+            [$controller, $method] = $handler;
+            $controller->$method($request, $params);
+            return;
         }
+
+        if (is_array($handler) && is_string($handler[0] ?? null)) {
+            [$class, $method] = $handler;
+            $controller = new $class();
+            $controller->$method($request, $params);
+            return;
+        }
+
+        if (is_callable($handler)) {
+            $handler($request, $params);
+        }
+}
 
         private function normalizePath(string $path): string
         {
