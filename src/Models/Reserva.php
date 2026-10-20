@@ -13,26 +13,28 @@
         public readOnly string $emailHuesped,
         public readonly string $nombreAlojamiento,
         public readOnly string $fechaEntrada,
+        public readOnly string $fechaSalida,
         public readOnly string $estado,
-        public readOnly float $precioTotal,
+        public readOnly float $importe,
         public readOnly ?string $notas,
         public readOnly ?string $fechaCreacion = null,
 
         ) {}
 
-        public function fromArray(array $data): self {
+        public static function fromArray(array $data): self {
             $row = $data;
 
             return new self(
                 id: isset($row['id']) ? (int) $row['id'] : null,
-                nombreHuesped: $row['nombreHuesped'] ?? '',
-                emailHuesped: $row['emailHuesped'] ?? '',
-                nombreAlojamiento: $row['nombreAlojamiento'] ?? '',
-                fechaEntrada: $row['fechaEntrada'] ?? '',
+                nombreHuesped: $row['nombre_huesped'] ?? '',
+                emailHuesped: $row['email_huesped'] ?? '',
+                nombreAlojamiento: $row['nombre_alojamiento'] ?? '',
+                fechaEntrada: $row['fecha_entrada'] ?? '',
+                fechaSalida: $row['fecha_salida'] ?? '',
                 estado: $row['estado'] ?? '',
-                precioTotal: isset($row['precioTotal']) ? (float) $row['precioTotal'] : 0.0,
+                importe: isset($row['importe']) ? (float) $row['importe'] : 0.0,
                 notas: $row['notas'] ?? null,
-                fechaCreacion: $row['fechaCreacion'] ?? null
+                fechaCreacion: $row['fecha_creacion'] ?? null
             );
         }
 
@@ -44,7 +46,7 @@
                 'nombreAlojamiento' => $this->nombreAlojamiento,
                 'fechaEntrada' => $this->fechaEntrada,
                 'estado' => $this->estado,
-                'precioTotal' => $this->precioTotal,
+                'precioTotal' => $this->importe,
                 'notas' => $this->notas,
                 'fechaCreacion' => $this->fechaCreacion
             ];

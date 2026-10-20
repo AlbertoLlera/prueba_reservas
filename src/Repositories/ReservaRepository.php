@@ -46,9 +46,7 @@ final class ReservaRepository
         return array_map(fn($row) => Reserva::fromArray($row), $rows);
     }
 
-    /**
-     * Busca una reserva por ID. Devuelve null si no existe.
-     */
+
     public function findById(int $id): ?Reserva
     {
         $stmt = $this->pdo->prepare("SELECT * FROM reserva WHERE id = :id");
@@ -58,9 +56,7 @@ final class ReservaRepository
         return $row === false ? null : Reserva::fromArray($row);
     }
 
-    /**
-     * Inserta una nueva reserva. Devuelve el ID generado.
-     */
+
     public function create(Reserva $reserva): int
     {
         $sql = "INSERT INTO reserva
