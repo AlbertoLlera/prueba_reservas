@@ -12,7 +12,7 @@
         public function add(int $reservaId, string $tipo, string $descripcion): void {
 
             $stmt = $this->pdo->prepare(
-                'INSERT INTO reserva_evento (reserva_id, tipo, descripcion) VALUES (:reservaId, :tipo, :descripcion)'
+                'INSERT INTO reserva_evento (reserva_id, tipo, descripcion) VALUES (:reserva_id, :tipo, :descripcion)'
             );
             $stmt->execute([
                 'reserva_id' => $reservaId,
