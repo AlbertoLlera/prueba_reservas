@@ -37,7 +37,7 @@ final class ReservaRepository
             $params['busqueda'] = '%' . $filtros['busqueda'] . '%';
         }
 
-        $sql .= " ORDER BY fecha_entrada DESC";
+        $sql .= " ORDER BY fecha_entrada DESC LIMIT 100";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
