@@ -1,0 +1,31 @@
+{% extends 'base.twig' %}
+
+{% block title %}Detalle Reserva #{{ reserva.id }}{% endblock %}
+
+{% block content %}
+    <h2>Reserva #{{ reserva.id }}</h2>
+    <p><a href="/reservas_api/public/reservas">&larr; Volver al listado</a></p>
+
+    <table border="1" cellpadding="8" cellspacing="0" style="margin-bottom: 20px;">
+        <tr><th>Huésped</th><td>{{ reserva.nombreHuesped }}</td></tr>
+        <tr><th>Email</th><td>{{ reserva.emailHuesped }}</td></tr>
+        <tr><th>Alojamiento</th><td>{{ reserva.nombreAlojamiento }}</td></tr>
+        <tr><th>Fechas</th><td>Del {{ reserva.fechaEntrada }} al {{ reserva.fechaSalida }}</td></tr>
+        <tr><th>Estado</th><td><strong>{{ reserva.estado|upper }}</strong></td></tr>
+        <tr><th>Importe</th><td>{{ reserva.importe }} €</td></tr>
+        <tr><th>Notas</th><td>{{ reserva.notas|default('Sin notas') }}</td></tr>
+    </table>
+
+    <h3>Historial de Eventos</h3>
+    <ul>
+        {% for evento in eventos %}
+            <li>
+                <strong>[{{ evento.tipo|upper }}]</strong> 
+                {{ evento.descripcion }} 
+                <small>({{ evento.fecha_creacion }})</small>
+            </li>
+        {% else %}
+            <li>No hay eventos registrados.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

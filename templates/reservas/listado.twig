@@ -1,0 +1,60 @@
+{% extends 'base.twig' %}
+
+{% block title %}Listado de Reservas{% endblock %}
+
+{% block content %}
+    <h2>Reservas</h2>
+
+    <form method="GET" action="/reservas_api/public/reservas" style="margin-bottom: 20px;">
+        <select name="estado">
+            <option value="">Todos los estados</option>
+            <option value="pendiente" {% if filtros.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+            <option value="confirmada" {% if filtros.estado == 'confirmada' %}selected{% endif %}>Confirmada</option>
+            <option value="cancelada" {% if filtros.estado == 'cancelada' %}selected{% endif %}>Cancelada</option>
+        </select>
+
+        <input type="date" name="fecha_desde" value="{{ filtros.fecha_desde|default('') }}">
+        <input type="date" name="fecha_hasta" value="{{ filtros.fecha_hasta|default('') }}">
+        <input type="text" name="busqueda" placeholder="Nombre huésped..." value="{{ filtros.busqueda|default('') }}">
+        
+        <button type="submit">Filtrar</button>
+        <a href="/reservas_api/public/reservas">Limpiar</a>
+    </form>
+
+    <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; text-align: left; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Huésped</th>
+                <th>Alojamiento</th>
+                <th>Entrada</th>
+                <th>Salida</th>
+                <th>Estado</th>
+                <th>Importe</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reserva in reservas %}
+                <tr>
+                    <td>{{ reserva.id }}</td>
+                    <td>{{ reserva.nombreHuesped }}</td>
+                    <td>{{ reserva.nombreAlojamiento }}</td>
+                    <td>{{ reserva.fechaEntrada }}</td>
+                    <td>{{ reserva.fechaSalida }}</td>
+                    <td>
+                        <span class="estado-{{ reserva.estado }}">{{ reserva.estado|capitalize }}</span>
+                    </td>
+                    <td>{{ reserva.importe }} €</td>
+                    <td>
+                        <a href="/reservas_api/public/reservas/{{ reserva.id }}">Ver detalle</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="8">No hay reservas que coincidan con los filtros.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -27,14 +27,13 @@
         }
 
 
-        public function obtener(int $id): Reserva
-    {
-        $reserva = $this->reservas->findById($id);
-        if ($reserva === null) {
-            throw new NotFoundException("Reserva con id {$id} no encontrada.");
+        public function obtener(int $id): Reserva {
+            $reserva = $this->reservas->findById($id);
+            if ($reserva === null) {
+                throw new NotFoundException("Reserva con id {$id} no encontrada.");
+            }
+            return $reserva;
         }
-        return $reserva;
-    }
 
 
     public function crear(array $data): Reserva
@@ -67,30 +66,23 @@
         return $this->obtener($id);
     }
 
-    /**
-     * Cambia el estado de una reserva.
-     * Valida la transición y registra evento.
-     */
-    public function cambiarEstado(int $id, string $nuevoEstado): Reserva
-    {
-        $reserva = $this->obtener($id);
+        public function cambiarEstado(int $id, string $nuevoEstado): Reserva {
+            $reserva = $this->obtener($id);
 
-        $error = $this->validator->validateTransicion($reserva->estado, $nuevoEstado);
-        if ($error !== null) {
-            throw new ConflictException($error);
+            $error = $this->validator->validateTransicion($reserva->estado, $nuevoEstado);
+            if ($error !== null) {
+                throw new ConflictException($error);
+            }
+
+            $this->reservas->updateEstado($id, $nuevoEstado);
+
+            $this->eventos->add(
+                $id,
+                $nuevoEstado,
+                "Estado cambiado de '{$reserva->estado}' a '{$nuevoEstado}'."
+            );
+
+            return $this->obtener($id);
         }
-
-        $this->reservas->updateEstado($id, $nuevoEstado);
-
-        $this->eventos->add(
-            $id,
-            $nuevoEstado,
-            "Estado cambiado de '{$reserva->estado}' a '{$nuevoEstado}'."
-        );
-
-        return $this->obtener($id);
-    }
-
-
 
     }

@@ -19,8 +19,11 @@ use App\Repositories\ReservaEventoRepository;
 use App\Repositories\ReservaRepository;
 use App\Services\ReservaService;
 use App\Validators\ReservaValidator;
+use App\Controllers\Web\ReservaWebController;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
-// 1. Config
+
 Config::load(__DIR__ . '/../.env');
 
 // 2. Error handler (lo primero, para capturar todo)
@@ -37,24 +40,27 @@ $db = new Database(
 );
 $pdo = $db->getConnection();
 
-// 4. Repositorios
 $reservaRepo = new ReservaRepository($pdo);
 $eventoRepo  = new ReservaEventoRepository($pdo);
 
-// 5. Validator
 $validator = new ReservaValidator();
 
-// 6. Service
 $reservaService = new ReservaService($reservaRepo, $eventoRepo, $validator);
 
-// 7. Controladores
 $reservaController = new ReservaController($reservaService);
 
-// 8. Router
+
+$loader = new FilesystemLoader(__DIR__ . '/../templates');
+$twig = new Environment($loader, [
+    'cache' => __DIR__ . '/../cache/twig',
+    'auto_reload' => true,
+]);
+
+$reservaWebController = new ReservaWebController($reservaService, $eventoRepo, $twig);
+
 $router = new Router();
 
-// 9. Rutas
-// Endpoint de diagnóstico
+
 $router->add('GET', '/api/ping', function (Request $req, array $params): void {
     Response::json([
         'ok'        => true,
@@ -62,12 +68,17 @@ $router->add('GET', '/api/ping', function (Request $req, array $params): void {
     ], 200)->send();
 });
 
-// Reservas (REST)
+
 $router->add('GET',   '/api/reservas',                 [$reservaController, 'index']);
 $router->add('GET',   '/api/reservas/{id}',            [$reservaController, 'show']);
 $router->add('POST',  '/api/reservas',                 [$reservaController, 'store']);
 $router->add('PATCH', '/api/reservas/{id}/estado',     [$reservaController, 'cambiarEstado']);
 
-// 10. Dispatch
+
 $request = Request::fromGlobals();
+
+$router->add('GET', '/reservas',              [$reservaWebController, 'index']);
+$router->add('GET', '/reservas/crear',        [$reservaWebController, 'crear']); // Ojo: antes que {id}
+$router->add('GET', '/reservas/{id}',         [$reservaWebController, 'show']);
+
 $router->dispatch($request);
