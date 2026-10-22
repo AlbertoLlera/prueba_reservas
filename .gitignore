@@ -5,3 +5,5 @@
 .vscode/
 *.log
 !.env.example
+.phpunit.cache/
+*.phar

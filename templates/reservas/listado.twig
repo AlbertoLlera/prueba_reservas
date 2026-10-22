@@ -45,9 +45,18 @@
                     <td>
                         <span class="estado-{{ reserva.estado }}">{{ reserva.estado|capitalize }}</span>
                     </td>
-                    <td>{{ reserva.importe }} €</td>
                     <td>
-                        <a href="/reservas_api/public/reservas/{{ reserva.id }}">Ver detalle</a>
+                        {{ reserva.importe }} €
+                    </td>
+                    <td>
+                        <a href="/reservas_api/public/reservas/{{ reserva.id }}">Ver</a>
+                        
+                        {% if reserva.estado == 'pendiente' %}
+                            | <button class="btn-cambiar-estado" data-id="{{ reserva.id }}" data-estado="confirmada" style="cursor:pointer; color:green; border:none; background:none; padding:0; font-size:inherit; text-decoration:underline;">Confirmar</button>
+                            | <button class="btn-cambiar-estado" data-id="{{ reserva.id }}" data-estado="cancelada" style="cursor:pointer; color:red; border:none; background:none; padding:0; font-size:inherit; text-decoration:underline;">Cancelar</button>
+                        {% elseif reserva.estado == 'confirmada' %}
+                            | <button class="btn-cambiar-estado" data-id="{{ reserva.id }}" data-estado="cancelada" style="cursor:pointer; color:red; border:none; background:none; padding:0; font-size:inherit; text-decoration:underline;">Cancelar</button>
+                        {% endif %}
                     </td>
                 </tr>
             {% else %}
